@@ -2,8 +2,6 @@ var addBtn = document.querySelector("#add-btn")
 var model = document.querySelector(".model")
 var closeBtn = document.querySelector("#closeBtn")
 var allInput = document.querySelectorAll("INPUT")
-// var updateBtn = document.querySelector("#update-btn")
-
 addBtn.onclick = function () {
   model.classList.add("active");
   productBtn.style.opacity = "100";
@@ -26,26 +24,34 @@ var priceEl = document.querySelector("#price")
 var pimageEl = document.querySelector("#pimage")
 var productform = document.querySelector("#addProductForm")
 var updateproductBtn = document.querySelector("#updateproductbtn")
-productBtn.onclick = function (e) {
+var imgUrl;
+productform.onsubmit = function (e) {
+  
   e.preventDefault()
   addproductData()
   getDataFromLocal()
   productform.reset("")
   closeBtn.click()
+  
 }
 
 if (localStorage.getItem("productData") != null) {
   productData = JSON.parse(localStorage.getItem("productData"))
 }
 function addproductData() {
+
+  
+
   productData.push({
     pname: pnameEl.value,
     description: descriptionEl.value,
     price: priceEl.value,
-    pimage: pimageEl.value,
+    pimage:imgUrl,
+
   })
   var productstring = JSON.stringify(productData)
   localStorage.setItem("productData", productstring)
+  
   swal("Good job!", "Product Added Successfullt !", "success")
 }
 
@@ -60,8 +66,7 @@ const getDataFromLocal = () => {
         <td>${data.pname}</td>
         <td>${data.description}</td>
         <td>${data.price}</td>
-        <td>${data.pimage}</td>
-
+        <td><img src="${data.pimage}" width="40" height="40"></td>
           <td>  <button class="editbutton edit-btn mx-1 " ><i class="fa fa-edit"></i></button>
             <button class="deletebutton del-btn"><i class="fa fa-trash"></i></button>
         </td>
@@ -97,67 +102,38 @@ const getDataFromLocal = () => {
     }
   }
 
-  //update data into local storage
-  var EditBtn = document.querySelectorAll(".edit-btn")
-//   for (i = 0; i < EditBtn.length; i++) {
-//     EditBtn[i].onclick = function () {
-//       var tr = this.parentElement.parentElement;
-//       var td = tr.getElementsByTagName("TD");
-//       console.log(td);
-//       var index = tr.getAttribute("index");
-//       var pname = td[1].innerHTML;
-//       var desc = td[2].innerHTML;
-//       var price = td[3].innerHTML;
-//       var pimage = td[4].innerHTML; 
-//       addBtn.click()
-//       updateBtn.style.opacity = "100";
-//       productBtn.style.opacity = "0";
-//       pnameEl.value = pname;
-//       descriptionEl.value = desc;
-//       priceEl.value = price;
-//       pimageEl.value = pimage.files[0];
-//       updateBtn.onclick = function () {
-//         alert()
-//         productData[index] = {
-//           pname: pnameEl.value,
-//           description: descriptionEl.value,
-//           price: priceEl.value,
-//           pimage: pimageEl.value,
-//         }
-//         localStorage.setItem("productData", JSON.stringify(productData))
-//       }
-//     }
-//   }
+    // update data into local storage
+var EditBtn = document.querySelectorAll(".edit-btn")
 
-    for(i=0;i<EditBtn.length;i++){
-        EditBtn[i].onclick = function(){
-            var tr = this.parentElement.parentElement;
-            var td = tr.getElementsByTagName("TD");
-            var index = tr.getAttribute("index");
-            var pname = td[1].innerHTML;
-            var description  = td[2].innerHTML;
-            var price = td[3].innerHTML;
-            var pimage = td[4].innerHTML;
-            addBtn.click();
-            updateproductBtn .style.opacity = "100";
-            productBtn.style.opacity = "0";
-            pnameEl.value = pname;
-            descriptionEl.value= description;
-            priceEl.value = price;
-            pimageEl.value = pimage;
-            updateproductBtn.onclick = function(e){
-                productData[index]={
-                    pname: pnameEl.value,
-                 description: descriptionEl.value,
-                    price: priceEl.value,
-                    pimage: pimageEl.value,
-
-                }
-             localStorage.setItem("productData", JSON.stringify(productData))
-
+for(i=0;i<EditBtn.length;i++){
+    EditBtn[i].onclick = function(){
+        var tr = this.parentElement.parentElement;
+        var td = tr.getElementsByTagName("TD");
+        var index = tr.getAttribute("index");
+        var pname = td[1].innerHTML;
+        var description = td[2].innerHTML;
+        var price = td[3].innerHTML;
+        var pimage = td[4].innerHTML;
+        addBtn.click();
+        updateproductBtn .style.opacity = "100";
+        productBtn.style.opacity = "0";
+        pnameEl.value = pname;
+        descriptionEl.value= description;
+        priceEl.value = price;
+        pimageEl.value = pimage;
+        updateproductBtn.onclick = function(e){
+          e.preventDefault()
+          alert();
+            productData[index]={
+                pname: pnameEl.value,
+                description: descriptionEl.value,
+                price: priceEl.value,
+                pimage: pimageEl.value,
             }
+            localStorage.setItem("productData", JSON.stringify(productData))
         }
     }
+}
 }
 getDataFromLocal()
 
@@ -206,21 +182,6 @@ allDel.onclick = function () {
   })
 }
 
-//image processing
-
-// const fileInput = document.getElementById('fileInput');
-// const image = document.getElementById('image');
-
-// fileInput.addEventListener('change', (event) => {
-//   const file = event.target.files[0];
-
-//   const reader = new FileReader();
-//   reader.onload = (event) => {
-//     image.src = event.target.result;
-//   };
-
-//   reader.readAsDataURL(file);
-// });
 
 
 //Sorting 
@@ -254,3 +215,19 @@ function sortTable(column,sort_arc){
     }).map(sorted_row => document.querySelector('tbody').appendChild(sorted_row))
 }
 
+
+//image processing
+var uploadPic = document.getElementById("pimage");
+function uploadPicHandler() {
+  if (uploadPic.files[0]) {
+      var fReader = new FileReader();
+      fReader.onload = function(e) {
+           imgUrl = e.target.result;
+        
+      }
+      fReader.readAsDataURL(uploadPic.files[0]);
+  }
+}
+
+
+uploadPic.addEventListener("change", uploadPicHandler);
